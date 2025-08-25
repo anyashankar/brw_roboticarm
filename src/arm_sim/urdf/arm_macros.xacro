@@ -1,0 +1,50 @@
+<?xml version="1.0"?>
+
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+  <!--- Useful arm_model macros -->
+  <xacro:macro name="cylinder" params="name height radius color jmass render">
+    <xacro:if value="${render == 1}">
+      <link name="${name}">
+        <collision>
+          <geometry>
+            <cylinder length="${height}" radius="${radius}"/>
+          </geometry>
+        </collision>
+    
+        <visual>
+          <geometry>
+            <cylinder length="${height}" radius="${radius}"/>
+          </geometry>
+          <material name="${color}"/>
+        </visual>
+    
+        <inertial>
+          <mass value="${motor_weight}" />
+          <inertia
+              ixx="${(jmass / 12) * (3 * radius * radius + height * height)}" ixy="0.0" ixz="0.0"
+              iyy="${(jmass / 12) * (3 * radius * radius + height * height)}" iyz="0.0"
+              izz="${jmass * radius * radius / 2}" />
+        </inertial>
+      </link>
+
+      <gazebo reference="${name}">
+        <gravity>0</gravity>
+      </gazebo>
+    </xacro:if>
+  </xacro:macro>
+
+  <xacro:macro name="axis_trans_def" params="name render">
+    <xacro:if value="${render == 1}">
+      <transmission name="${name}_trans">
+        <type>transmission_interface/SimpleTransmission</type>
+        <actuator name="${name}_motor">
+          <hardwareInterface> hardware_interface/VelocityJointInterface </hardwareInterface>
+          <mechanicalReduction> 1 </mechanicalReduction>
+        </actuator>
+        <joint name="${name}">
+          <hardwareInterface> hardware_interface/VelocityJointInterface </hardwareInterface>
+        </joint>
+      </transmission>
+    </xacro:if>
+  </xacro:macro>
+</robot>
